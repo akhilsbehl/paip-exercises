@@ -27,3 +27,18 @@
   instead of nil."
   (cond ((null (cdr (last expr))) (print expr))
         (t (print-dotted expr))))
+
+;;;; Exercise 3.5 seemed like an interesting problem but too vague for a
+;;;; solution to be implemented. Even the solution given is too limited.
+
+(defun length-by-reduce (alist)
+  "Exercise 3.9: Find length of a list using reduce."
+  (reduce #'+ (mapcar #'(lambda (x) 1) alist)))
+
+;;;; Exercise 3.11: `acons`.
+
+(defun format-to-sentence (words)
+  "Exercise 3.12: Format in sentence case."
+  (format t "~@(~a~) ~{~a~^ ~}." (first words) (rest words)))
+
+(format-to-sentence '("asb" "is" "a" "very" "good" "boy"))
