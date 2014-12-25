@@ -8,16 +8,22 @@
   (let ((start-time (gensym))
         (stop-time (gensym))
         (temp (gensym))
-        (retval (gensym)))
-    `(let ((,start-time (get-internal-run-time))
-           (,retval (let ((,temp))
-                      (dotimes (i ,with-runs ,temp)
-                        (setf ,temp ,@body))))
-           (,stop-time (get-internal-run-time)))
+        (retval (gensym))
+        (elapsed-time (gensym)))
+    `(let* ((,start-time (get-internal-run-time))
+            (,retval (let ((,temp))
+                       (dotimes (i ,with-runs ,temp)
+                         (setf ,temp ,@body))))
+            (,stop-time (get-internal-run-time))
+            (,elapsed-time (/ (- ,stop-time ,start-time)
+                              internal-time-units-per-second)))
        (format ,to-stream
-               "~CTime spent in expression over ~:d iterations: ~f seconds.~C"
-               #\linefeed ,with-runs
-               (/ (- ,stop-time ,start-time)
-                  internal-time-units-per-second)
+               (concatenate 'string
+                            "~CAverage (total) time spent in expression"
+                            " over ~:d iterations: ~f (~f) seconds.~C")
+               #\linefeed
+               ,with-runs
+               ,elapsed-time
+               (/ ,elapsed-time ,with-runs)
                #\linefeed)
        ,retval)))
